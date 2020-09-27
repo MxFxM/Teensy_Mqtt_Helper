@@ -29,9 +29,9 @@ void setup() {
   }
 
   Serial.println();
-  Serial.println("Connect packet:");
+  Serial.println("Publish packet:");
 
-  len = mqtt.Publish(&data[0], "test", "hello");
+  len = mqtt.Publish(&data[0], "testtopic", "hello, this is a message {json:;01}");
   
   if (len == -1) {
     Serial.println("Publish failed");
