@@ -21,15 +21,16 @@ Create a connect packet with authentication
 Data is written into the byte array at *data
 If length exceeds maxlen, no data is written
 Make sure to offer a buffer large enough
+Returns actual data length or -1 as error
 */
-bool Mqtt_Helper::ConnectAuthenticate(char *data, String user, String password, int maxlen=255) {
+int Mqtt_Helper::ConnectAuthenticate(char *data, String user, String password, int maxlen=255) {
 
     // estimate length of packet
     int packet_length = 2 + 6*2 + 6 + 6 + user.length() + password.length();
 
     if (packet_length > maxlen) {
         // available length is not sufficient
-        return 1;
+        return -1;
     }
 
     // connect header
@@ -40,7 +41,7 @@ bool Mqtt_Helper::ConnectAuthenticate(char *data, String user, String password, 
     packet_length = packet_length - 2;
     if (packet_length > 0xFF) {
         // remaining length does not fit
-        return 1;
+        return -1;
     }
 
     // remaining length
@@ -90,7 +91,7 @@ bool Mqtt_Helper::ConnectAuthenticate(char *data, String user, String password, 
     // username length
     if (user.length() > 0xFFFF) {
         // username too long
-        return 1;
+        return -1;
     }
 
     uint16_t user_length = user.length();
@@ -108,7 +109,7 @@ bool Mqtt_Helper::ConnectAuthenticate(char *data, String user, String password, 
     // password length
     if (password.length() > 0xFFFF) {
         // password too long
-        return 1;
+        return -1;
     }
 
     uint16_t password_length = password.length();
@@ -124,7 +125,7 @@ bool Mqtt_Helper::ConnectAuthenticate(char *data, String user, String password, 
     }
 
     // no errors
-    return 0;
+    return packet_length+2;
 }
 
 /*
@@ -132,15 +133,16 @@ Create a publish packet
 Data is written into the byte array at *data
 If length exceeds maxlen, no data is written
 Make sure to offer a buffer large enough
+Returns actual data length or -1 as error
 */
-bool Mqtt_Helper::Publish(char *data, String topic, String message, int maxlen=255) {
+int Mqtt_Helper::Publish(char *data, String topic, String message, int maxlen=255) {
 
     // estimate length of packet
     int packet_length = 2 + 1*2 + topic.length() + message.length();
 
     if (packet_length > maxlen) {
         // available length is not sufficient
-        return 1;
+        return -1;
     }
 
     // publish header
@@ -151,7 +153,7 @@ bool Mqtt_Helper::Publish(char *data, String topic, String message, int maxlen=2
     packet_length = packet_length - 2;
     if (packet_length > 0xFF) {
         // remaining length does not fit
-        return 1;
+        return -1;
     }
 
     // remaining length
@@ -161,7 +163,7 @@ bool Mqtt_Helper::Publish(char *data, String topic, String message, int maxlen=2
     // topic length
     if (topic.length() > 0xFFFF) {
         // topic too long
-        return 1;
+        return -1;
     }
 
     uint16_t topic_length = topic.length();
@@ -183,5 +185,5 @@ bool Mqtt_Helper::Publish(char *data, String topic, String message, int maxlen=2
     }
 
     // no errors
-    return 0;
+    return packet_length+2;
 }

@@ -7,8 +7,8 @@ public:
 	Mqtt_Helper(String ID="");
 
     // methods
-    bool ConnectAuthenticate(char *data, String user, String password, int maxlen=255);
-    bool Publish(char *data, String topic, String message, int maxlen=255);
+    int ConnectAuthenticate(char *data, String user, String password, int maxlen=255);
+    int Publish(char *data, String topic, String message, int maxlen=255);
 
 private:
     // a unique ID
